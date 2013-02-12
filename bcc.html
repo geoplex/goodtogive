@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Display ArcGIS Server data in Leaflet</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="http://leaflet.cloudmade.com/dist/leaflet.css" />
+	<!--[if lte IE 8]><link rel="stylessheet" href="../dist/leaflet.ie.css" /><![endif]-->
+
+	<script src="http://leaflet.cloudmade.com/dist/leaflet.js"></script>
+
+	<!--<script src="../debug/leaflet-include.js"></script>-->
+	<script src="BCC_Bikeways.js" type="text/javascript"></script>
+</head>
+<body>
+	<div id="map" style="width: 700px; height: 500px"></div>
+
+	<script>
+		var map = new L.Map('map');
+
+		var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/22677/256/{z}/{x}/{y}.png',
+			cloudmadeAttribution = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+			cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttribution});
+
+		map.setView(new L.LatLng(-27.466, 153.012), 12).addLayer(cloudmade);
+
+		function onEachFeature(feature, layer) {
+			if (feature.properties && feature.properties.popupContent){
+				layer.bindPopup(feature.properties.popupContent);
+			}
+			
+			//if (feature.properties && feature.properties.style && layer.setStyle){
+			//	layer.setStyle(feature.properties.style);
+			//}
+		}
+		
+		function setStyle(feature) {
+			switch (feature.properties.TRAFFIC__1) {
+				case 'SHARED PATHWAY': return {color: "#006FA5"};
+				case 'BICYCLE ROUTE': return {color: "#42E9F4"};
+				case 'BICYCLE AWARENESS': return {color: "#93A605"};
+				case 'CONNECT': return {color: "#17BF9B"};
+				case 'BICYCLE LANE': return {color: "#F28705"};
+			}
+		}
+
+		var geojsonLayer = new L.GeoJSON(localities,{
+			onEachFeature: onEachFeature,
+			style: setStyle
+		}).addTo(map);
+		
+		//geojsonLayer.on("featureparse", function (e) {
+		//	if (e.properties && e.properties.popupContent){
+		//		e.layer.bindPopup(e.properties.popupContent);
+		//	}
+		//	
+		//	if (e.properties && e.properties.style && e.layer.setStyle){
+		//		e.layer.setStyle(e.properties.style);
+		//	}
+		//});
+
+
+		//map.addLayer(geojsonLayer);
+		
+		//geojsonLayer.addData(localities);
+
+
+	</script>
+</body>
+</html>
